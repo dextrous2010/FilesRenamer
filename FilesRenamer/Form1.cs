@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace FilesRenamer
 {
@@ -17,6 +18,7 @@ namespace FilesRenamer
         static String dirPath, fileType;
         static DirectoryInfo dirInfo;
         FileInfo[] files;
+        String newFilePath;
 
         
 
@@ -88,14 +90,37 @@ namespace FilesRenamer
                 {
                     String oldFileName = dirPath + @"\" + fileName.Name;
                     String newFileName = random.Next(1, 199) + "_" + fileName.Name;
-                    String newFilePath = dirPath + @"\" + folderName + @"\" + newFileName;
+                    newFilePath = dirPath + @"\" + folderName;
+                    String newFilePathAndName = dirPath + @"\" + folderName + @"\" + newFileName;
 
-                    File.Copy(oldFileName, newFilePath, true);
+                    File.Copy(oldFileName, newFilePathAndName, true);
 
                     listBox2.Items.Add(newFileName);
                 }
 
                 progressBar1.PerformStep();
+            }
+
+
+            string message = "Файли успішно перейменовано! Натисніть ОК, щоб відкрити папку з ними.";
+            string caption = "Виконано!";
+            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+            DialogResult result;
+
+            result = MessageBox.Show(message, caption, buttons);
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                string _path = newFilePath;
+                startInfo.Arguments = string.Format("/C start {0}", _path);
+                process.StartInfo = startInfo;
+                process.Start();
+
             }
         }
 
